@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MediaPipe Face Landmarker + Hat</title>
+
+  <!-- Material Design -->
+  <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
+  <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+
+  <!-- Import maps for Three.js -->
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
+      }
+    }
+  </script>
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <h1>MediaPipe FaceLandmarker + Three.js Hat</h1>
+
+  <section id="demos" class="invisible" >
+    <div class="controls" >
+      <button id="webcamButton" class="mdc-button mdc-button--raised">
+        <span class="mdc-button__ripple"></span>
+        <span class="mdc-button__label">ENABLE WEBCAM</span>
+      </button>
+      <button id="toggleLandmarksButton" class="mdc-button mdc-button--outlined">
+        <span class="mdc-button__ripple"></span>
+        <span class="mdc-button__label">TOGGLE LANDMARKS</span>
+      </button>
+    </div>
+
+    <div id="cameraContainer">
+      <video id="webcam" autoplay playsinline ></video>
+      
+      <canvas class="output_canvas" id="output_canvas"></canvas>
+      <div id="ar-overlay-container" ></div>
+    </div>
+
+    <div class="blend-shapes">
+      <ul class="blend-shapes-list" id="video-blend-shapes"></ul>
+    </div>
+  </section>
+
+  <!-- Отдельный контейнер для AR-канваса (Three.js) -->
+  <!-- <div id="ar-canvas-container">
+    
+  </div> -->
+  <script type="module" src="script.js"></script>
+</body>
+
+</html>
