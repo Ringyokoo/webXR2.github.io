@@ -19,6 +19,8 @@ let runningMode = "IMAGE";
 let webcamRunning = false;
 let showLandmarks = false;
 // const videoWidth = 480;
+const camScale = document.getElementById("scaleCamera");
+
 
 //console.log(aspect);
 
@@ -55,32 +57,32 @@ let camera;
 
 // hat.matrixAutoUpdate = true;
 
-    
+
 
 
 
 let hatGroup = new THREE.Group();
- let hat;
-hatGroup.add(hat);
+// let hat;
+// hatGroup.add(hat);
 
 const loader = new GLTFLoader();
-    loader.load('hat_glb_bej.glb', (gltf) => {
-      hat = gltf.scene;
-      hat.scale.set(2.5,2.5,2.5); // Временно 1, будем менять позже
-      hat.rotateX(0.1);; // Сдвиг назад (чтобы центр шляпы был позади)
-      hat.position.set(0, 9, -8);
-      hatGroup.add(hat);
+loader.load('hat_glb_bej.glb', (gltf) => {
+    const hat = gltf.scene;
+    hat.scale.set(2.5, 2.5, 2.5); // Временно 1, будем менять позже
+    hat.rotateX(0.1);; // Сдвиг назад (чтобы центр шляпы был позади)
+    hat.position.set(0, 9, -8);
+    hatGroup.add(hat);
     //   hatGroup.visible = false;
-    //   scene.add(hatGroup);
-    });
+      scene.add(hatGroup);
+});
 
-scene.add(hatGroup);
+// scene.add(hatGroup);
 
 function animate() {
-  requestAnimationFrame(animate);
-  if (camera) {
-    renderer.render(scene, camera);
-  }
+    requestAnimationFrame(animate);
+    if (camera) {
+        renderer.render(scene, camera);
+    }
 }
 animate(); // можно вызывать сразу
 
@@ -121,8 +123,11 @@ function enableCam() {
             facingMode: "user"
         }
     };
-
+    // console.log(constraints.video.width);
     navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
+        const track = stream.getVideoTracks()[0];
+        // const settings = track.getSettings();
+        // console.log('📷 Реальные параметры камеры:', settings);
         video.srcObject = stream;
         video.addEventListener("loadeddata", predictWebcam);
     });
@@ -135,8 +140,9 @@ const drawingUtils = new DrawingUtils(canvasCtx);
 async function predictWebcam() {
     const videoWidth = video.videoWidth;
     const videoHeight = video.videoHeight;
+    camScale.innerHTML = `${videoWidth} / ${videoHeight}`;
     const aspect = video.videoHeight / video.videoWidth;
-
+    // console.log(video.videoWidth, videoHeight, aspect);
     // Размеры рендерера
     renderer.setSize(videoWidth, videoHeight, false);
 
@@ -155,8 +161,8 @@ async function predictWebcam() {
     canvasElement.width = videoWidth;
     canvasElement.height = videoHeight;
     renderer.setSize(videoWidth, videoHeight);
+    // video.style.objectFit = "cover";
 
-    
 
 
     if (runningMode === "IMAGE") {
@@ -174,6 +180,7 @@ async function predictWebcam() {
     canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
 
     if (results?.faceLandmarks?.length) {
+        //  document.getElementById("loadingOverlay").remove();
         if (showLandmarks) {
             for (const landmarks of results.faceLandmarks) {
                 drawingUtils.drawConnectors(landmarks, FaceLandmarker.FACE_LANDMARKS_TESSELATION, { color: "#C0C0C070" });
@@ -199,22 +206,31 @@ async function predictWebcam() {
 }
 
 // освещение
-    // Создаём новое освещение
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);  // Более яркий общий свет
-    scene.add(ambientLight);
+// Создаём новое освещение
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);  // Более яркий общий свет
+scene.add(ambientLight);
 
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 2.5);  // Ещё ярче
-    directionalLight.position.set(5, 8, 6);  // Выше и спереди для равномерного освещения
-    scene.add(directionalLight);
+const directionalLight = new THREE.DirectionalLight(0xffffff, 2.5);  // Ещё ярче
+directionalLight.position.set(5, 8, 6);  // Выше и спереди для равномерного освещения
+scene.add(directionalLight);
 
-    const fillLight = new THREE.DirectionalLight(0xffffff, 1.0);  // Усиленный заполняющий свет
-    fillLight.position.set(-3, 2, -4);  // Слева и сзади
-    scene.add(fillLight);
+const fillLight = new THREE.DirectionalLight(0xffffff, 1.0);  // Усиленный заполняющий свет
+fillLight.position.set(-3, 2, -4);  // Слева и сзади
+scene.add(fillLight);
 
-    // Обновляем рендеринг
-    renderer.render(scene, camera);
+// Обновляем рендеринг
+// renderer.render(scene, camera);
 
 function drawBlendShapes(el, blendShapes) {
     if (!blendShapes.length) return;
     // можно реализовать позже при необходимости
 }
+
+const originalLog = console.log;
+console.log = function (...args) {
+  if (args[0]?.includes?.("Graph successfully started running")) {
+    document.getElementById("loadingOverlay").style.display = "none";
+  }
+  originalLog.apply(console, args);
+};
+
