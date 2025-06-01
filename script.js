@@ -18,23 +18,7 @@ let faceLandmarker;
 let runningMode = "IMAGE";
 let webcamRunning = false;
 let showLandmarks = false;
-// const videoWidth = 480;
-const camScale = document.getElementById("scaleCamera");
 
-
-//console.log(aspect);
-
-// Three.js
-// const renderer = new THREE.WebGLRenderer({ alpha: true });
-// renderer.setPixelRatio(window.devicePixelRatio);
-// renderer.setSize(video.videoWidth, video.videoHeight);
-// console.log(video.videoWidth, video.videoHeight, 'sjjfhsjhgjgjhdgfdsghsjhgjgfhsdghj');
-// renderer.domElement.classList.add("three-canvas");
-// overlay.appendChild(renderer.domElement);
-
-// const scene = new THREE.Scene();
-// const camera = new THREE.PerspectiveCamera(63.5, video.videoWidth / video.videoHeight, 0.1, 1000);
-// camera.position.set(0, 0, 0);
 
 const scene = new THREE.Scene();
 const renderer = new THREE.WebGLRenderer({ alpha: true });
@@ -44,39 +28,7 @@ overlay.appendChild(renderer.domElement);
 
 // Камера без точных параметров пока
 let camera;
-
-
-
-// const geometry = new THREE.ConeGeometry(10, 10, 10);
-// geometry.rotateX(0.1);
-// geometry.translate(0, 15, -2);  // основание в (0,0,0), вершина вверх
-// const material = new THREE.MeshBasicMaterial({ color: 0xffaa00 });
-// const hat = new THREE.Mesh(geometry, material);
-// let hatGroup = new THREE.Group();
-//hatGroup.add(hat);
-
-// hat.matrixAutoUpdate = true;
-
-
-
-
-
 let hatGroup = new THREE.Group();
-// let hat;
-// hatGroup.add(hat);
-
-const loader = new GLTFLoader();
-loader.load('hat_glb_bej.glb', (gltf) => {
-    const hat = gltf.scene;
-    hat.scale.set(2.5, 2.5, 2.5); // Временно 1, будем менять позже
-    hat.rotateX(0.1);; // Сдвиг назад (чтобы центр шляпы был позади)
-    hat.position.set(0, 9, -8);
-    hatGroup.add(hat);
-    //   hatGroup.visible = false;
-      scene.add(hatGroup);
-});
-
-// scene.add(hatGroup);
 
 function animate() {
     requestAnimationFrame(animate);
@@ -123,7 +75,7 @@ function enableCam() {
             facingMode: "user"
         }
     };
-    // console.log(constraints.video.width);
+    
     navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
         const track = stream.getVideoTracks()[0];
         // const settings = track.getSettings();
@@ -140,10 +92,9 @@ const drawingUtils = new DrawingUtils(canvasCtx);
 async function predictWebcam() {
     const videoWidth = video.videoWidth;
     const videoHeight = video.videoHeight;
-    camScale.innerHTML = `${videoWidth} / ${videoHeight}`;
+   
     const aspect = video.videoHeight / video.videoWidth;
-    // console.log(video.videoWidth, videoHeight, aspect);
-    // Размеры рендерера
+    
     renderer.setSize(videoWidth, videoHeight, false);
 
     // Камера создаётся теперь — когда есть точный aspect
@@ -161,9 +112,23 @@ async function predictWebcam() {
     canvasElement.width = videoWidth;
     canvasElement.height = videoHeight;
     renderer.setSize(videoWidth, videoHeight);
-    // video.style.objectFit = "cover";
+    
+    if (hatGroup && !hatGroup.userData.initialized) {
+        const loader = new GLTFLoader();
+        loader.load('hat_glb_bej.glb', (gltf) => {
+            const hat = gltf.scene;
+            hat.scale.set(2.5, 2.5, 2.5); // Временно 1, будем менять позже
+            hat.rotateX(0.1);; // Сдвиг назад (чтобы центр шляпы был позади)
+            const heightFactor = video.videoHeight / 480;
+            console.log(heightFactor);
+            hat.position.set(0, 6 * heightFactor, -8);
+            hatGroup.add(hat);
+            //   hatGroup.visible = false;
+            scene.add(hatGroup);
+        });
 
-
+        hatGroup.userData.initialized = true; // чтобы не менять каждый кадр
+    }
 
     if (runningMode === "IMAGE") {
         runningMode = "VIDEO";
@@ -228,9 +193,9 @@ function drawBlendShapes(el, blendShapes) {
 
 const originalLog = console.log;
 console.log = function (...args) {
-  if (args[0]?.includes?.("Graph successfully started running")) {
-    document.getElementById("loadingOverlay").style.display = "none";
-  }
-  originalLog.apply(console, args);
+    if (args[0]?.includes?.("Graph successfully started running")) {
+        document.getElementById("loadingOverlay").style.display = "none";
+    }
+    originalLog.apply(console, args);
 };
 
