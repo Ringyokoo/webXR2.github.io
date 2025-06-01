@@ -76,5 +76,6 @@ video {
 @media screen and (max-width: 980px) {
     #cameraContainer {
       width: 100vw;
+      margin: 0em;
     }
 }
