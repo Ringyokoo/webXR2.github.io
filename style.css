@@ -72,3 +72,9 @@ video {
   color: white;
   padding: 0 4px;
 }
+
+@media screen and (max-width: 980px) {
+    #cameraContainer {
+      width: 100vw;
+    }
+}
