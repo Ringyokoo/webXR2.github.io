@@ -74,7 +74,7 @@ hatButton.addEventListener("click", () => {
 function enableCam() {
     if (!faceLandmarker) return;
     webcamRunning = !webcamRunning;
-    enableWebcamButton.innerText = webcamRunning ? "DISABLE" : "ENABLE WEBCAM";
+    enableWebcamButton.innerText = webcamRunning ? "DISABLE1" : "ENABLE WEBCAM1";
 
     const constraints = {
         video: {
@@ -127,12 +127,12 @@ async function predictWebcam() {
             const hat = gltf.scene;
             
             hat.rotateX(0.1);; // Сдвиг назад (чтобы центр шляпы был позади)
-            const heightFactor =  videoWidth / videoHeight;
-            hat.scale.set(2.7, 2.7, 2.7); // Временно 1, будем менять позже
+            const heightFactor = videoHeight / videoWidth;
+            hat.scale.setScalar(5 * heightFactor); // Временно 1, будем менять позже
             // document.getElementById("scaleCam").innerHTML = 'heightFactor ' + heightFactor + ' videoHeight ' + videoHeight + ' videoWidth ' + videoWidth;
             console.log('heightFactor',heightFactor, 'videoHeight', videoHeight, 'videoWidth', videoWidth);
-            hat.position.set(0, 5.3 * heightFactor, -14 * (heightFactor == videoWidth / videoHeight ? videoHeight / videoWidth : videoWidth / videoHeight));
-            console.log('hat.position',hat.position, ' ', heightFactor == videoWidth / videoHeight ? videoHeight / videoWidth : videoWidth / videoHeight);
+            hat.position.set(0, 15 * heightFactor, -14 * heightFactor);
+            console.log('hat.position',hat.position, ' ', heightFactor);
             hatGroup.add(hat);
             //   hatGroup.visible = false;
             scene.add(hatGroup);
