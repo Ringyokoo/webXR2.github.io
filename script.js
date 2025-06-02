@@ -74,7 +74,7 @@ hatButton.addEventListener("click", () => {
 function enableCam() {
     if (!faceLandmarker) return;
     webcamRunning = !webcamRunning;
-    enableWebcamButton.innerText = webcamRunning ? "DISABLE9" : "ENABLE WEBCAM9";
+    enableWebcamButton.innerText = webcamRunning ? "DISABLE10" : "ENABLE WEBCAM10";
 
     const constraints = {
         video: {
@@ -101,16 +101,11 @@ async function predictWebcam() {
     const videoWidth = video.videoWidth;
     const videoHeight = video.videoHeight;
 
-    // const aspect = videoWidth / videoHeight;
+    const aspect = videoWidth / videoHeight;
 
-    const bounds = video.getBoundingClientRect();
-    const domWidth = bounds.width;
-    const domHeight = bounds.height;
-    const aspect = domWidth / domHeight;
-    // console.log(domWidth, domHeight, aspect, videoWidth, videoHeight);
-    // renderer.setSize(videoWidth, videoHeight, false);
+    renderer.setSize(videoWidth, videoHeight, false);
     // Камера создаётся теперь — когда есть точный aspect
-    camera = new THREE.PerspectiveCamera(50, aspect, 0.1, 1000);
+    camera = new THREE.PerspectiveCamera(50, videoWidth / videoHeight, 0.1, 1000);
     camera.position.set(0, 0, 5); // или 0.5, в зависимости от сцены
 
 
@@ -166,41 +161,20 @@ async function predictWebcam() {
 
         const matrix = results.facialTransformationMatrixes?.[0]?.data;
         if (matrix && matrix.every(Number.isFinite)) {
-            // const poseTransform = new THREE.Matrix4().fromArray(matrix);
+            const poseTransform = new THREE.Matrix4().fromArray(matrix);
 
-            // // 1. Отключаем автообновление матрицы
-            // hatGroup.matrixAutoUpdate = false;
-
-
-            // // 2. Копируем матрицу напрямую
-            // hatGroup.matrix.copy(poseTransform);
-            // console.log(results.faceLandmarks[10])
-
-            // внутри predictWebcam, после получения matrix =================================
-            const raw = new THREE.Matrix4().fromArray(matrix);   // poseTransform в КООРДИНАТАХ КАМЕРЫ
-
-            // ── 1. делаем масштаб однородным (иначе «вытягивается вверх») ────────────────
-            const pos = new THREE.Vector3();
-            const quat = new THREE.Quaternion();
-            const scale = new THREE.Vector3();
-            raw.decompose(pos, quat, scale);
-
-            const s = (scale.x + scale.y + scale.z) / 3;          // средний масштаб
-            const uniform = new THREE.Vector3(s, s, s);
-            raw.compose(pos, quat, uniform);                      // собираем обратно без перекоса
-
-            // ── 2. переносим из «камеры» в «мир»  ─────────────────────────────────────────
-            //  camera.matrixWorld  • raw   → объект теперь «прикручен» к голове,
-            //  но существует в общей сцене (полноценный AR)
-            const world = new THREE.Matrix4().multiplyMatrices(
-                camera.matrixWorld,   // из камеры в мир
-                raw                   // поза головы в камере
-            );
-
-            // ── 3. применяем  ─────────────────────────────────────────────────────────────
+            // 1. Отключаем автообновление матрицы
             hatGroup.matrixAutoUpdate = false;
-            hatGroup.matrix.copy(world);
 
+
+            // 2. Копируем матрицу напрямую
+            if (video.videoHeight > video.videoWidth) {
+                const aspectCorrection = video.videoWidth / video.videoHeight;
+                const correctionMatrix = new THREE.Matrix4().makeScale(1, aspectCorrection, 1);
+                poseTransform.premultiply(correctionMatrix);
+            }
+            hatGroup.matrix.copy(poseTransform);
+            // console.log(results.faceLandmarks[10])
         }
 
     }
