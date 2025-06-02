@@ -74,7 +74,7 @@ hatButton.addEventListener("click", () => {
 function enableCam() {
     if (!faceLandmarker) return;
     webcamRunning = !webcamRunning;
-    enableWebcamButton.innerText = webcamRunning ? "DISABLE6" : "ENABLE WEBCAM6";
+    enableWebcamButton.innerText = webcamRunning ? "DISABLE7" : "ENABLE WEBCAM7";
 
     const constraints = {
         video: {
@@ -108,7 +108,7 @@ async function predictWebcam() {
 
     // если aspect < 1 — вертикальная камера
     if (aspect < 1) {
-        fov = 65;  // шире угол обзора, чтобы шляпа не уезжала
+        fov = 75;  // шире угол обзора, чтобы шляпа не уезжала
     }
 
     // Камера создаётся теперь — когда есть точный aspect
