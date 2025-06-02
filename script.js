@@ -74,7 +74,7 @@ hatButton.addEventListener("click", () => {
 function enableCam() {
     if (!faceLandmarker) return;
     webcamRunning = !webcamRunning;
-    enableWebcamButton.innerText = webcamRunning ? "DISABLE3" : "ENABLE WEBCAM3";
+    enableWebcamButton.innerText = webcamRunning ? "DISABLE4" : "ENABLE WEBCAM4";
 
     const constraints = {
         video: {
@@ -107,7 +107,7 @@ async function predictWebcam() {
 
     // Камера создаётся теперь — когда есть точный aspect
     camera = new THREE.PerspectiveCamera(50, videoWidth / videoHeight, 0.1, 1000);
-    camera.position.set(0, 0, 5); // или 0.5, в зависимости от сцены
+    camera.position.set(0, 0, 2.82 * (videoWidth / videoHeight)); // или 0.5, в зависимости от сцены
 
 
     const container = document.getElementById("cameraContainer");
