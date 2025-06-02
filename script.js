@@ -129,10 +129,8 @@ async function predictWebcam() {
             hat.rotateX(0.1);; // Сдвиг назад (чтобы центр шляпы был позади)
             const heightFactor =  videoWidth / videoHeight;
             hat.scale.setScalar(2.7); // Временно 1, будем менять позже
-            hat.position.set(0, 5 * heightFactor, -7);
-            // console.log('hat.position',hat.position, ' ', heightFactor);
+            hat.position.set(0, 8, -7.5);
             hatGroup.add(hat);
-            //   hatGroup.visible = false;
             scene.add(hatGroup);
         });
 
