@@ -125,12 +125,13 @@ async function predictWebcam() {
         const loader = new GLTFLoader();
         loader.load('hat_glb_bej.glb', (gltf) => {
             const hat = gltf.scene;
+            
             hat.rotateX(0.1);; // Сдвиг назад (чтобы центр шляпы был позади)
             const heightFactor =  videoWidth / videoHeight;
-            hat.scale.setScalar(1.7 * heightFactor); // Временно 1, будем менять позже
-            document.getElementById("scaleCam").innerHTML = 'heightFactor ' + heightFactor + ' videoHeight ' + videoHeight + ' videoWidth ' + videoWidth;
+            hat.scale.set(2.7, 2.7, 2.7); // Временно 1, будем менять позже
+            // document.getElementById("scaleCam").innerHTML = 'heightFactor ' + heightFactor + ' videoHeight ' + videoHeight + ' videoWidth ' + videoWidth;
             console.log('heightFactor',heightFactor, 'videoHeight', videoHeight, 'videoWidth', videoWidth);
-            hat.position.set(0, 5 * heightFactor, -5.5 * heightFactor);
+            hat.position.set(0, 6 * heightFactor, -5.5 * heightFactor);
             hatGroup.add(hat);
             //   hatGroup.visible = false;
             scene.add(hatGroup);
