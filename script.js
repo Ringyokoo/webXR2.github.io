@@ -74,7 +74,7 @@ hatButton.addEventListener("click", () => {
 function enableCam() {
     if (!faceLandmarker) return;
     webcamRunning = !webcamRunning;
-    enableWebcamButton.innerText = webcamRunning ? "DISABLE4" : "ENABLE WEBCAM4";
+    enableWebcamButton.innerText = webcamRunning ? "DISABLE5" : "ENABLE WEBCAM5";
 
     const constraints = {
         video: {
@@ -83,7 +83,7 @@ function enableCam() {
             facingMode: "user"
         }
     };
-    
+
     navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
         const track = stream.getVideoTracks()[0];
         // const settings = track.getSettings();
@@ -100,14 +100,20 @@ const drawingUtils = new DrawingUtils(canvasCtx);
 async function predictWebcam() {
     const videoWidth = video.videoWidth;
     const videoHeight = video.videoHeight;
-   
+
     const aspect = video.videoHeight / video.videoWidth;
-    
+
     renderer.setSize(videoWidth, videoHeight, false);
+    let fov = 50;
+
+    // если aspect < 1 — вертикальная камера
+    if (aspect < 1) {
+        fov = 65;  // шире угол обзора, чтобы шляпа не уезжала
+    }
 
     // Камера создаётся теперь — когда есть точный aspect
-    camera = new THREE.PerspectiveCamera(50, videoWidth / videoHeight, 0.1, 1000);
-    camera.position.set(0, 0, 2.82 * (videoWidth / videoHeight)); // или 0.5, в зависимости от сцены
+    camera = new THREE.PerspectiveCamera(fov, videoWidth / videoHeight, 0.1, 1000);
+    camera.position.set(0, 0, 5); // или 0.5, в зависимости от сцены
 
 
     const container = document.getElementById("cameraContainer");
@@ -120,14 +126,14 @@ async function predictWebcam() {
     canvasElement.width = videoWidth;
     canvasElement.height = videoHeight;
     renderer.setSize(videoWidth, videoHeight);
-    
+
     if (hatGroup && !hatGroup.userData.initialized) {
         const loader = new GLTFLoader();
         loader.load('hat_glb_bej.glb', (gltf) => {
             const hat = gltf.scene;
-            
+
             hat.rotateX(0.1);; // Сдвиг назад (чтобы центр шляпы был позади)
-            const heightFactor =  videoWidth / videoHeight;
+            const heightFactor = videoWidth / videoHeight;
             hat.scale.setScalar(2.7); // Временно 1, будем менять позже
             hat.position.set(0, 8, -7.5);
             hatGroup.add(hat);
@@ -159,7 +165,7 @@ async function predictWebcam() {
                 drawingUtils.drawConnectors(landmarks, FaceLandmarker.FACE_LANDMARKS_FACE_OVAL, { color: "#E0E0E0" });
             }
         }
-        
+
         const matrix = results.facialTransformationMatrixes?.[0]?.data;
         if (matrix && matrix.every(Number.isFinite)) {
             const poseTransform = new THREE.Matrix4().fromArray(matrix);
