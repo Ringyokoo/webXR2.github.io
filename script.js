@@ -131,7 +131,8 @@ async function predictWebcam() {
             hat.scale.set(2.7, 2.7, 2.7); // Временно 1, будем менять позже
             // document.getElementById("scaleCam").innerHTML = 'heightFactor ' + heightFactor + ' videoHeight ' + videoHeight + ' videoWidth ' + videoWidth;
             console.log('heightFactor',heightFactor, 'videoHeight', videoHeight, 'videoWidth', videoWidth);
-            hat.position.set(0, 6 * heightFactor, -5.5 * heightFactor);
+            hat.position.set(0, 5.3 * heightFactor, -14 * (heightFactor == videoWidth / videoHeight ? videoHeight / videoWidth : videoWidth / videoHeight));
+            console.log('hat.position',hat.position, ' ', heightFactor == videoWidth / videoHeight ? videoHeight / videoWidth : videoWidth / videoHeight);
             hatGroup.add(hat);
             //   hatGroup.visible = false;
             scene.add(hatGroup);
