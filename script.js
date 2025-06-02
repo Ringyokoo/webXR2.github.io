@@ -74,7 +74,7 @@ hatButton.addEventListener("click", () => {
 function enableCam() {
     if (!faceLandmarker) return;
     webcamRunning = !webcamRunning;
-    enableWebcamButton.innerText = webcamRunning ? "DISABLE5" : "ENABLE WEBCAM5";
+    enableWebcamButton.innerText = webcamRunning ? "DISABLE6" : "ENABLE WEBCAM6";
 
     const constraints = {
         video: {
@@ -101,7 +101,7 @@ async function predictWebcam() {
     const videoWidth = video.videoWidth;
     const videoHeight = video.videoHeight;
 
-    const aspect = video.videoHeight / video.videoWidth;
+    const aspect = videoWidth / videoHeight;
 
     renderer.setSize(videoWidth, videoHeight, false);
     let fov = 50;
