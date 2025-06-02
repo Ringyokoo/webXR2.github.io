@@ -73,12 +73,26 @@ video {
   padding: 0 4px;
 }
 
+#loadingOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.9);
+  color: #333;
+  font-size: 2em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+
+
 @media screen and (max-width: 980px) {
     #cameraContainer {
       width: 90vw;
-      
+        
     }
     body{
-      margin: 0em;
+        margin: 0em;
     }
 }
