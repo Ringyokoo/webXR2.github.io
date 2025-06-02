@@ -77,13 +77,13 @@ function enableCam() {
     enableWebcamButton.innerText = webcamRunning ? "DISABLE5" : "ENABLE WEBCAM5";
 
     const constraints = {
-    video: {
-        width: { ideal: 1920 },
-        height: { ideal: 1080 },
-        aspectRatio: 16 / 9,
-        facingMode: "user"
-    }
-};
+        video: {
+            width: { ideal: 1920 },
+            height: { ideal: 1080 },
+            aspectRatio: 16 / 9,
+            facingMode: "user"
+        }
+    };
 
     navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
         const track = stream.getVideoTracks()[0];
@@ -129,7 +129,7 @@ async function predictWebcam() {
             hat.rotateX(0.1);; // Сдвиг назад (чтобы центр шляпы был позади)
             const heightFactor = videoWidth / videoHeight;
             hat.scale.setScalar(2.7); // Временно 1, будем менять позже
-            hat.position.set(0, 0, -7);
+            hat.position.set(0, 8, -7);
             hatGroup.add(hat);
             scene.add(hatGroup);
         });
@@ -160,18 +160,25 @@ async function predictWebcam() {
             }
         }
 
-        const matrix = results.facialTransformationMatrixes?.[0]?.data;
-        if (matrix && matrix.every(Number.isFinite)) {
-            const poseTransform = new THREE.Matrix4().fromArray(matrix);
-            const imageToThreeJS = new THREE.Matrix4();
+const matrixRaw = results.facialTransformationMatrixes?.[0]?.data;
+if (matrixRaw && matrixRaw.every(Number.isFinite)) {
+    const matrix = new THREE.Matrix4().fromArray(matrixRaw);
 
-            // 1. Отключаем автообновление матрицы
-            hatGroup.matrixAutoUpdate = false;
-            
-            // 2. Копируем матрицу напрямую
-            hatGroup.matrix.copy(poseTransform);
-            // console.log(results.faceLandmarks[10])
-        }
+    const position = new THREE.Vector3();
+    const rotation = new THREE.Quaternion();
+    const scale = new THREE.Vector3();
+    matrix.decompose(position, rotation, scale);
+
+    const nose = results.faceLandmarks[0][1]; // Landmark #1 — кончик носа
+    const noseVec = new THREE.Vector3(nose.x, nose.y, nose.z);
+    const noseWorld = noseVec.clone().applyMatrix4(matrix);
+
+    const poseCorrected = new THREE.Matrix4();
+    poseCorrected.compose(noseWorld, rotation, scale);
+
+    hatGroup.matrixAutoUpdate = false;
+    hatGroup.matrix.copy(poseCorrected);  // ✅ правильно
+}
 
     }
 
