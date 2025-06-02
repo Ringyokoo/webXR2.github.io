@@ -88,10 +88,10 @@ video {
 
 
 @media screen and (max-width: 980px) {
-/*     #cameraContainer {
+    #cameraContainer {
       width: 90vw;
         
-    } */
+    }
     body{
         margin: 0em;
     }
