@@ -74,7 +74,7 @@ hatButton.addEventListener("click", () => {
 function enableCam() {
     if (!faceLandmarker) return;
     webcamRunning = !webcamRunning;
-    enableWebcamButton.innerText = webcamRunning ? "DISABLE1" : "ENABLE WEBCAM1";
+    enableWebcamButton.innerText = webcamRunning ? "DISABLE2" : "ENABLE WEBCAM2";
 
     const constraints = {
         video: {
@@ -127,12 +127,10 @@ async function predictWebcam() {
             const hat = gltf.scene;
             
             hat.rotateX(0.1);; // Сдвиг назад (чтобы центр шляпы был позади)
-            const heightFactor = videoHeight / videoWidth;
-            hat.scale.setScalar(5 * heightFactor); // Временно 1, будем менять позже
-            // document.getElementById("scaleCam").innerHTML = 'heightFactor ' + heightFactor + ' videoHeight ' + videoHeight + ' videoWidth ' + videoWidth;
-            console.log('heightFactor',heightFactor, 'videoHeight', videoHeight, 'videoWidth', videoWidth);
-            hat.position.set(0, 15 * heightFactor, -14 * heightFactor);
-            console.log('hat.position',hat.position, ' ', heightFactor);
+            const heightFactor =  videoWidth / videoHeight;
+            hat.scale.setScalar(2.7); // Временно 1, будем менять позже
+            hat.position.set(0, 5 * heightFactor, -7);
+            // console.log('hat.position',hat.position, ' ', heightFactor);
             hatGroup.add(hat);
             //   hatGroup.visible = false;
             scene.add(hatGroup);
@@ -163,7 +161,7 @@ async function predictWebcam() {
                 drawingUtils.drawConnectors(landmarks, FaceLandmarker.FACE_LANDMARKS_FACE_OVAL, { color: "#E0E0E0" });
             }
         }
-
+        
         const matrix = results.facialTransformationMatrixes?.[0]?.data;
         if (matrix && matrix.every(Number.isFinite)) {
             const poseTransform = new THREE.Matrix4().fromArray(matrix);
@@ -174,6 +172,7 @@ async function predictWebcam() {
 
             // 2. Копируем матрицу напрямую
             hatGroup.matrix.copy(poseTransform);
+            // console.log(results.faceLandmarks[10])
         }
 
     }
