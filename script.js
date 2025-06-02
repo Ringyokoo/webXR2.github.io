@@ -12,6 +12,7 @@ const video = document.getElementById("webcam");
 const canvasElement = document.getElementById("output_canvas");
 const canvasCtx = canvasElement.getContext("2d");
 const enableWebcamButton = document.getElementById("webcamButton");
+const hatButton = document.getElementById("hatButton");
 const overlay = document.getElementById("ar-overlay-container");
 
 let faceLandmarker;
@@ -61,6 +62,13 @@ if (navigator.mediaDevices.getUserMedia) {
 }
 toggleLandmarksButton.addEventListener("click", () => {
     showLandmarks = !showLandmarks;
+});
+
+if (navigator.mediaDevices.getUserMedia) {
+    enableWebcamButton.addEventListener("click", enableCam);
+}
+hatButton.addEventListener("click", () => {
+    hatGroup.visible = !hatGroup.visible;
 });
 
 function enableCam() {
@@ -119,8 +127,9 @@ async function predictWebcam() {
             const hat = gltf.scene;
             hat.scale.set(2.5, 2.5, 2.5); // Временно 1, будем менять позже
             hat.rotateX(0.1);; // Сдвиг назад (чтобы центр шляпы был позади)
-            const heightFactor = video.videoHeight / 480;
-            console.log(heightFactor);
+            const heightFactor = videoHeight > videoWidth ? videoHeight / videoWidth : videoWidth / videoHeight;
+            document.getElementById("scaleCamera").innerHTML = 'heightFactor ' + heightFactor + ' videoHeight ' + videoHeight + ' videoWidth ' + videoWidth;
+            console.log('heightFactor',heightFactor, 'videoHeight', videoHeight, 'videoWidth', videoWidth);
             hat.position.set(0, 6 * heightFactor, -8);
             hatGroup.add(hat);
             //   hatGroup.visible = false;
@@ -183,13 +192,6 @@ const fillLight = new THREE.DirectionalLight(0xffffff, 1.0);  // Усиленн�
 fillLight.position.set(-3, 2, -4);  // Слева и сзади
 scene.add(fillLight);
 
-// Обновляем рендеринг
-// renderer.render(scene, camera);
-
-function drawBlendShapes(el, blendShapes) {
-    if (!blendShapes.length) return;
-    // можно реализовать позже при необходимости
-}
 
 const originalLog = console.log;
 console.log = function (...args) {
