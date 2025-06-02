@@ -74,15 +74,16 @@ hatButton.addEventListener("click", () => {
 function enableCam() {
     if (!faceLandmarker) return;
     webcamRunning = !webcamRunning;
-    enableWebcamButton.innerText = webcamRunning ? "DISABLE10" : "ENABLE WEBCAM10";
+    enableWebcamButton.innerText = webcamRunning ? "DISABLE5" : "ENABLE WEBCAM5";
 
     const constraints = {
-        video: {
-            width: { ideal: 1920 },
-            height: { ideal: 1080 },
-            facingMode: "user"
-        }
-    };
+    video: {
+        width: { ideal: 1920 },
+        height: { ideal: 1080 },
+        aspectRatio: 16 / 9,
+        facingMode: "user"
+    }
+};
 
     navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
         const track = stream.getVideoTracks()[0];
@@ -128,7 +129,7 @@ async function predictWebcam() {
             hat.rotateX(0.1);; // Сдвиг назад (чтобы центр шляпы был позади)
             const heightFactor = videoWidth / videoHeight;
             hat.scale.setScalar(2.7); // Временно 1, будем менять позже
-            hat.position.set(0, 8, -7.5);
+            hat.position.set(0, 0, -7);
             hatGroup.add(hat);
             scene.add(hatGroup);
         });
@@ -162,17 +163,12 @@ async function predictWebcam() {
         const matrix = results.facialTransformationMatrixes?.[0]?.data;
         if (matrix && matrix.every(Number.isFinite)) {
             const poseTransform = new THREE.Matrix4().fromArray(matrix);
+            const imageToThreeJS = new THREE.Matrix4();
 
             // 1. Отключаем автообновление матрицы
             hatGroup.matrixAutoUpdate = false;
-
-
+            
             // 2. Копируем матрицу напрямую
-            if (video.videoHeight > video.videoWidth) {
-                const aspectCorrection = video.videoWidth / video.videoHeight;
-                const correctionMatrix = new THREE.Matrix4().makeScale(1, aspectCorrection, 1);
-                poseTransform.premultiply(correctionMatrix);
-            }
             hatGroup.matrix.copy(poseTransform);
             // console.log(results.faceLandmarks[10])
         }
