@@ -74,7 +74,7 @@ hatButton.addEventListener("click", () => {
 function enableCam() {
     if (!faceLandmarker) return;
     webcamRunning = !webcamRunning;
-    enableWebcamButton.innerText = webcamRunning ? "DISABLE2" : "ENABLE WEBCAM2";
+    enableWebcamButton.innerText = webcamRunning ? "DISABLE3" : "ENABLE WEBCAM3";
 
     const constraints = {
         video: {
